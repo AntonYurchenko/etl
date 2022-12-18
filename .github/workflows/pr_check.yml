@@ -41,9 +41,10 @@ jobs:
         env:
           percent: ${{ needs.test.outputs.coverage-percent }}
         run: |
-          if (( ${{ env.percent }} <= 30 )); then 
+          echo "percent = ${{ env.percent }}"; 
+          if (( $(echo "${{ env.percent }} <= 30" |bc -l) )); then 
             echo "::set-output name=val::red"
-          elif (( ${{ env.percent }} >= 80 )); then
+          elif (( $(echo "${{ env.percent }} >= 80" |bc -l) )); then 
             echo "::set-output name=val::green"
           else 
             echo "::set-output name=val::yellow"
@@ -60,6 +61,7 @@ jobs:
           label: ${{ steps.color.outputs.val }}
           dir: ./.github/labels
         run: |
+          echo "percent = ${{env.percent }}, labal = ${{ env.label }}";
           mkdir -p ${{ env.dir }} \
           && curl -X GET "https://img.shields.io/static/v1?style=flat&label=coverage&message=${{ env.percent }}%25&color=${{ env.label }}" \
               -o ${{ env.dir }}/test_coverage.svg
